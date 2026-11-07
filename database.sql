@@ -69,3 +69,30 @@ INSERT IGNORE INTO settings (`key`, `value`) VALUES
   ('deputy_name', 'Злата Чурина'),
   ('deputy_role', 'Первый заместитель руководителя'),
   ('deputy_photo', '');
+
+-- Самые активные участники (добавляются через админку)
+CREATE TABLE IF NOT EXISTS active_members (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(120) NOT NULL,
+  photo VARCHAR(255) DEFAULT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Защита от перебора и частых запросов (ограничение по IP)
+CREATE TABLE IF NOT EXISTS rate_limits (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  ip_hash CHAR(64) NOT NULL,
+  action VARCHAR(32) NOT NULL,
+  hits INT NOT NULL DEFAULT 0,
+  window_start INT NOT NULL,
+  UNIQUE KEY uniq_ip_action (ip_hash, action)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Контакты: телефон и почта убраны, соцсеть ВК, адрес по умолчанию
+UPDATE settings SET `value` = 'г. Таганрог, ул. Фрунзе 59' WHERE `key` = 'address';
+UPDATE settings SET `value` = 'https://vk.ru/club234662241' WHERE `key` = 'socials';
+UPDATE settings SET `value` = '' WHERE `key` IN ('phone', 'email');
+UPDATE settings SET `value` = 'Абакумов Артём Анатольевич' WHERE `key` = 'leader_name';
+UPDATE settings SET `value` = '15' WHERE `key` = 'members_count';
+UPDATE settings SET `value` = '100+' WHERE `key` = 'events_count';

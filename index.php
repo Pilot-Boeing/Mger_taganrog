@@ -5,6 +5,7 @@ $s = setting_map();
 $news = db()->query("SELECT * FROM articles WHERE published=1 AND category='news' ORDER BY created_at DESC LIMIT 6")->fetchAll();
 $events = db()->query("SELECT * FROM articles WHERE published=1 AND category='event' ORDER BY event_date ASC, created_at DESC LIMIT 6")->fetchAll();
 $albums = db()->query("SELECT a.*, (SELECT file FROM album_photos p WHERE p.album_id=a.id ORDER BY sort_order, id LIMIT 1) AS cover, (SELECT COUNT(*) FROM album_photos p WHERE p.album_id=a.id) AS photos_count FROM albums a WHERE a.published=1 ORDER BY a.created_at DESC LIMIT 6")->fetchAll();
+$actives = db()->query('SELECT * FROM active_members ORDER BY sort_order, id')->fetchAll();
 $sent = isset($_GET['sent']);
 $error = isset($_GET['error']) ? $_GET['error'] : '';
 
@@ -39,6 +40,7 @@ function fmt_date(?string $d): string {
       <a href="#history">История</a>
       <a href="#apply" class="nav-cta">Вступить</a>
     </nav>
+    <a class="theme-btn admin-entry" href="login.php">Вход для администратора</a>
     <button class="theme-btn" id="themeBtn" aria-label="Сменить тему">Тёмная тема</button>
   </div>
 </header>
@@ -98,6 +100,24 @@ function fmt_date(?string $d): string {
           <p><?= e($s[$key.'_role']) ?></p>
         </div>
       </article>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
+<section id="actives" class="section">
+  <div class="wrap">
+    <p class="eyebrow">Самые активные</p>
+    <h2>Наши активисты</h2>
+    <div class="leaders">
+      <?php if (!$actives): ?><p class="empty">Пока здесь никого нет.</p><?php endif; ?>
+      <?php foreach ($actives as $m): ?>
+        <article class="leader">
+          <div class="leader-photo">
+            <?php if ($m['photo']): ?><img src="<?= e(UPLOAD_URL . $m['photo']) ?>" alt="<?= e($m['full_name']) ?>"><?php else: ?><span><?= e(mb_substr($m['full_name'], 0, 1)) ?></span><?php endif; ?>
+          </div>
+          <div class="leader-info"><h3><?= e($m['full_name']) ?></h3></div>
+        </article>
       <?php endforeach; ?>
     </div>
   </div>
@@ -210,8 +230,8 @@ function fmt_date(?string $d): string {
       </ol>
       <div class="contacts">
         <p><span>Адрес</span> <?= e($s['address'] ?: 'уточняется') ?></p>
-        <p><span>Телефон</span> <?= e($s['phone'] ?: 'уточняется') ?></p>
-        <p><span>Почта</span> <?= e($s['email'] ?: 'уточняется') ?></p>
+        <p><span>Руководитель</span> <?= e($s['leader_name']) ?></p>
+        <p><span>Соцсети</span> <?php if (!empty($s['socials'])): ?><a href="<?= e($s['socials']) ?>" target="_blank" rel="noopener noreferrer">ВКонтакте</a><?php else: ?>уточняется<?php endif; ?></p>
       </div>
     </div>
     <form class="form" method="post" action="apply.php">

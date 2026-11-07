@@ -4,6 +4,9 @@ require_once __DIR__ . '/includes/bootstrap.php';
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('index.php#apply');
 }
+if (!rate_limit('apply', 5, 600)) {
+    redirect('index.php?error=' . urlencode('Слишком много заявок. Попробуйте позже.') . '#apply');
+}
 
 $name = trim($_POST['name'] ?? '');
 $age = (int)($_POST['age'] ?? 0);

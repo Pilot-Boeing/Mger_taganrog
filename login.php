@@ -9,22 +9,26 @@ if (!empty($_SESSION['admin_id'])) {
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
-    $login = trim($_POST['login'] ?? '');
-    $password = (string)($_POST['password'] ?? '');
-
-    // Небольшая задержка при неверном вводе, затрудняет подбор пароля
-    $stmt = db()->prepare('SELECT id, password_hash FROM admins WHERE login = ? LIMIT 1');
-    $stmt->execute([$login]);
-    $admin = $stmt->fetch();
-
-    if ($admin && password_verify($password, $admin['password_hash'])) {
-        session_regenerate_id(true);
-        $_SESSION['admin_id'] = (int)$admin['id'];
-        $_SESSION['csrf'] = bin2hex(random_bytes(32));
-        redirect('admin/index.php');
+    if (!rate_limit('login', 5, 900)) {
+        $error = 'Слишком много попыток входа. Подождите 15 минут.';
     }
-    usleep(800000);
-    $error = 'Неверный логин или пароль.';
+    if ($error === '') {
+        $login = trim($_POST['login'] ?? '');
+        $password = (string)($_POST['password'] ?? '');
+
+        $stmt = db()->prepare('SELECT id, password_hash FROM admins WHERE login = ? LIMIT 1');
+        $stmt->execute([$login]);
+        $admin = $stmt->fetch();
+
+        if ($admin && password_verify($password, $admin['password_hash'])) {
+            session_regenerate_id(true);
+            $_SESSION['admin_id'] = (int)$admin['id'];
+            $_SESSION['csrf'] = bin2hex(random_bytes(32));
+            redirect('admin/index.php');
+        }
+        usleep(800000);
+        $error = 'Неверный логин или пароль.';
+    }
 }
 ?>
 <!DOCTYPE html>
