@@ -40,6 +40,14 @@ nav .pill { background: var(--grad); color: #fff; box-shadow: var(--glow); }
 .stats strong { display: block; font-size: 40px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1.1; }
 .stats span { font-size: 14px; color: var(--muted); }
 
+/* Блоки: у каждого своя форма, но одна высота и одна линия */
+.dirs { align-items: stretch !important; }
+.dirs .dir { margin: 0 !important; transform: none !important; height: 100%; display: flex; flex-direction: column; align-items: flex-start; }
+.dirs .dir:hover { transform: translateY(-4px) !important; }
+.dirs .d-a { border-radius: 4px 26px 4px 26px; }
+.dirs .d-b { border-radius: 26px 4px 26px 4px; }
+.dirs .d-c { border-radius: 60px 60px 8px 8px; }
+.dirs .d-d { border-radius: 10px; }
 /* Блоки: у каждого своя форма и положение */
 .block { padding: 80px 0; }
 h2 { font-size: 34px; margin-bottom: 26px; letter-spacing: -.3px; }
