@@ -279,7 +279,7 @@ $('addActive').addEventListener('click', function () {
 
 
 // ===== Сохранение в репозиторий GitHub =====
-var GH_KEY = 'mger-gh';
+var GH_KEY = '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';
 function ghLoad() {
   try { var v = JSON.parse(localStorage.getItem(GH_KEY) || '{}'); $('ghToken').value = v.token || ''; $('ghRepo').value = v.repo || ''; } catch (e) {}
 }
