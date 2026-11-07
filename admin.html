@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Администратор | МГЕР Таганрог</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; background: #f4f6fb; color: #14284a; margin: 0; line-height: 1.5; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px; }
+  h1 { font-family: Georgia, serif; font-size: 26px; }
+  h2 { font-size: 19px; margin: 0 0 12px; }
+  .box { background: #fff; border-radius: 16px; padding: 22px; margin-bottom: 20px; box-shadow: 0 10px 26px rgba(20,40,74,.08); }
+  label { display: grid; gap: 5px; font-weight: 600; font-size: 14px; margin-bottom: 12px; }
+  input, textarea, select { font: inherit; padding: 10px 12px; border: 1px solid #d5dcea; border-radius: 9px; }
+  textarea { min-height: 80px; }
+  button { font: 600 14px "Segoe UI", Arial, sans-serif; padding: 10px 18px; border: 0; border-radius: 999px; background: linear-gradient(135deg, #1769aa, #d52b35); color: #fff; cursor: pointer; }
+  button.ghost { background: #fff; color: #14284a; border: 1px solid #d5dcea; }
+  button.danger { background: #fff; color: #d52b35; border: 1px solid #d52b35; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+  .item { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #eef1f7; }
+  .msg { color: #1e6b36; font-size: 14px; min-height: 20px; }
+  .err { color: #d52b35; font-size: 14px; }
+  .hidden { display: none; }
+  .small { color: #5a6a85; font-size: 13px; }
+  code { background: #eef3fa; padding: 2px 6px; border-radius: 6px; word-break: break-all; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Администратор МГЕР Таганрог</h1>
+
+  <!-- Установка пароля: показывается один раз, пока хеш не вписан в файл -->
+  <section id="setup" class="box hidden">
+    <h2>Первая настройка пароля</h2>
+    <p class="small">Введите пароль. Программа покажет хеш. Скопируйте строку в константу <code>ADMIN_HASH</code> в этом файле (внизу), сохраните файл и загрузите его заново.</p>
+    <label>Новый пароль (не короче 12 символов)<input type="password" id="setupPass"></label>
+    <button id="setupBtn">Получить хеш</button>
+    <p id="setupOut" class="small"></p>
+  </section>
+
+  <!-- Вход -->
+  <section id="login" class="box hidden">
+    <h2>Вход</h2>
+    <label>Пароль<input type="password" id="loginPass" autocomplete="current-password"></label>
+    <button id="loginBtn">Войти</button>
+    <p class="err" id="loginErr"></p>
+  </section>
+
+  <!-- Редактор -->
+  <section id="editor" class="hidden">
+    <div class="box">
+      <h2>Тексты и контакты</h2>
+      <label>Описание «Кто мы»<textarea id="f_about_text"></textarea></label>
+      <div class="row">
+        <label>Участников<input id="f_members_count"></label>
+        <label>Проведено мероприятий<input id="f_events_count"></label>
+      </div>
+      <div class="row">
+        <label>Адрес<input id="f_address"></label>
+        <label>Руководитель<input id="f_leader_name"></label>
+        <label>Должность руководителя<input id="f_leader_role"></label>
+        <label>Первый заместитель<input id="f_deputy_name"></label>
+        <label>Должность заместителя<input id="f_deputy_role"></label>
+        <label>Ссылка на соцсеть<input id="f_socials_url"></label>
+      </div>
+      <p class="small">Фото руководства: файлы <code>assets/img/abakumov.jpg</code> и <code>assets/img/chuprina.jpg</code>. Заменяются загрузкой новых файлов с тем же именем.</p>
+    </div>
+
+    <div class="box">
+      <h2>Новости</h2>
+      <label>Заголовок<input id="n_title"></label>
+      <label>Текст<textarea id="n_body"></textarea></label>
+      <label>Дата<input type="date" id="n_date"></label>
+      <button id="addNews">Добавить новость</button>
+      <div id="newsList"></div>
+    </div>
+
+    <div class="box">
+      <h2>Ближайшие события</h2>
+      <label>Название<input id="e_title"></label>
+      <div class="row">
+        <label>Дата<input type="date" id="e_date"></label>
+        <label>Место<input id="e_place"></label>
+      </div>
+      <label>Описание<textarea id="e_body"></textarea></label>
+      <button id="addEvent">Добавить событие</button>
+      <div id="eventList"></div>
+    </div>
+
+    <div class="box">
+      <h2>Самые активные</h2>
+      <div class="row">
+        <label>Фамилия и имя<input id="a_name"></label>
+        <label>Фото (JPG или PNG, будет уменьшено)<input type="file" id="a_photo" accept="image/*"></label>
+      </div>
+      <button id="addActive">Добавить участника</button>
+      <div id="activeList"></div>
+    </div>
+
+    <div class="box">
+      <h2>Сохранить изменения</h2>
+      <p class="small">Нажмите кнопку, скачается файл <code>data.js</code>. Загрузите его в репозиторий вместо старого. GitHub Pages обновит сайт через 1–2 минуты.</p>
+      <button id="saveBtn">Скачать data.js</button>
+      <p class="msg" id="saveMsg"></p>
+    </div>
+  </section>
+</div>
+
+<script src="data.js"></script>
+<script>
+// Хеш пароля. Вписывается один раз через «Первую настройку» выше.
+var ADMIN_HASH = "";
+
+var DATA = JSON.parse(JSON.stringify(window.SITE_DATA || { settings: {}, leaders: {}, news: [], events: [], actives: [] }));
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]; }); }
+
+async function sha256(text) {
+  var buf = new TextEncoder().encode(text);
+  var hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+
+// Вход или первая настройка
+if (!ADMIN_HASH) {
+  $('setup').classList.remove('hidden');
+} else {
+  $('login').classList.remove('hidden');
+}
+$('setupBtn').addEventListener('click', async function () {
+  var p = $('setupPass').value;
+  if (p.length < 12) { $('setupOut').textContent = 'Пароль должен быть не короче 12 символов.'; return; }
+  var h = await sha256(p);
+  $('setupOut').innerHTML = 'Вставьте в файл admin.html: <code>var ADMIN_HASH = "' + h + '";</code>';
+});
+$('loginBtn').addEventListener('click', async function () {
+  var h = await sha256($('loginPass').value);
+  if (h === ADMIN_HASH) {
+    $('login').classList.add('hidden');
+    $('editor').classList.remove('hidden');
+    fill();
+    render();
+  } else {
+    $('loginErr').textContent = 'Неверный пароль.';
+  }
+});
+
+function fill() {
+  var s = DATA.settings;
+  $('f_about_text').value = s.about_text || '';
+  $('f_members_count').value = s.members_count || '';
+  $('f_events_count').value = s.events_count || '';
+  $('f_address').value = s.address || '';
+  $('f_leader_name').value = s.leader_name || '';
+  $('f_leader_role').value = s.leader_role || '';
+  $('f_deputy_name').value = s.deputy_name || '';
+  $('f_deputy_role').value = s.deputy_role || '';
+  $('f_socials_url').value = s.socials_url || '';
+}
+function readSettings() {
+  var s = DATA.settings;
+  s.about_text = $('f_about_text').value.trim();
+  s.members_count = $('f_members_count').value.trim();
+  s.events_count = $('f_events_count').value.trim();
+  s.address = $('f_address').value.trim();
+  s.leader_name = $('f_leader_name').value.trim();
+  s.leader_role = $('f_leader_role').value.trim();
+  s.deputy_name = $('f_deputy_name').value.trim();
+  s.deputy_role = $('f_deputy_role').value.trim();
+  s.socials_url = $('f_socials_url').value.trim();
+}
+
+function listHtml(arr, kind) {
+  return arr.map(function (x, i) {
+    return '<div class="item"><div><b>' + esc(x.title || x.name) + '</b><br><span class="small">' +
+      esc(x.date || '') + (x.place ? ' · ' + esc(x.place) : '') + '</span></div>' +
+      '<button class="danger" data-kind="' + kind + '" data-i="' + i + '">Удалить</button></div>';
+  }).join('') || '<p class="small">Пока пусто.</p>';
+}
+function render() {
+  $('newsList').innerHTML = listHtml(DATA.news, 'news');
+  $('eventList').innerHTML = listHtml(DATA.events, 'events');
+  $('activeList').innerHTML = listHtml(DATA.actives, 'actives');
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('button[data-kind]');
+  if (!b) return;
+  var list = DATA[b.dataset.kind];
+  list.splice(Number(b.dataset.i), 1);
+  render();
+});
+
+$('addNews').addEventListener('click', function () {
+  var t = $('n_title').value.trim();
+  if (!t) return;
+  DATA.news.unshift({ title: t, body: $('n_body').value.trim(), date: $('n_date').value });
+  $('n_title').value = ''; $('n_body').value = ''; $('n_date').value = '';
+  render();
+});
+$('addEvent').addEventListener('click', function () {
+  var t = $('e_title').value.trim();
+  if (!t) return;
+  DATA.events.unshift({ title: t, date: $('e_date').value, place: $('e_place').value.trim(), body: $('e_body').value.trim() });
+  $('e_title').value = ''; $('e_date').value = ''; $('e_place').value = ''; $('e_body').value = '';
+  render();
+});
+
+// Фото уменьшаются до 400 пикселей и сохраняются в самом data.js
+function shrink(file, cb) {
+  var img = new Image();
+  img.onload = function () {
+    var k = Math.min(1, 400 / Math.max(img.width, img.height));
+    var c = document.createElement('canvas');
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    cb(c.toDataURL('image/jpeg', 0.85));
+  };
+  img.src = URL.createObjectURL(file);
+}
+$('addActive').addEventListener('click', function () {
+  var name = $('a_name').value.trim();
+  if (!name) return;
+  var file = $('a_photo').files[0];
+  var add = function (photo) {
+    DATA.actives.push({ name: name, photo: photo || '' });
+    $('a_name').value = ''; $('a_photo').value = '';
+    render();
+  };
+  if (file) shrink(file, add); else add('');
+});
+
+$('saveBtn').addEventListener('click', function () {
+  readSettings();
+  var text = '// Данные сайта. Обновлено: ' + new Date().toLocaleString('ru-RU') + '\n' +
+    'window.SITE_DATA = ' + JSON.stringify(DATA, null, 2) + ';\n';
+  var blob = new Blob([text], { type: 'text/javascript;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'data.js';
+  a.click();
+  $('saveMsg').textContent = 'Файл скачан. Загрузите его в репозиторий вместо старого.';
+});
+</script>
+</body>
+</html>
