@@ -138,9 +138,47 @@ footer { background: var(--grad); color: #fff; padding: 26px 0; }
 footer .wrap { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
 footer a { color: #fff; }
 
+/* Мобильная адаптация */
 @media (max-width: 760px) {
-  .burger { display: block; margin-left: auto; }
-  nav { display: none; width: 100%; flex-direction: column; background: var(--card); }
+  .wrap { padding: 0 16px; }
+  .top-in { gap: 10px; padding-top: 10px; padding-bottom: 10px; }
+  .mark { font-size: 17px; }
+  .theme { order: 2; margin-left: auto; padding: 7px 10px; font-size: 12px; white-space: nowrap; display: inline-block; }
+  .burger { display: inline-block; order: 3; padding: 7px 11px; font-size: 16px; }
+  nav { order: 4; display: none; width: 100%; flex-direction: column; margin: 0; background: var(--card); border-top: 1px solid var(--line); padding: 6px 0; }
   nav.open { display: flex; }
-  .theme { display: none; }
+  nav a { padding: 12px 8px; font-size: 16px; }
+  nav .pill { margin: 6px 0; text-align: center; }
+  .hero { padding: 56px 0 48px; }
+  .hero h1 { font-size: 34px; }
+  .intro { font-size: 16px; }
+  .stats { gap: 12px; }
+  .stats div { min-width: 0; flex: 1 1 100%; padding: 16px 18px; }
+  .stats strong { font-size: 32px; }
+  .block { padding: 54px 0; }
+  h2 { font-size: 27px; margin-bottom: 18px; }
+  .dirs { grid-template-columns: 1fr; gap: 14px; }
+  .d-b, .d-c, .d-d { margin-top: 0; }
+  .leaders { grid-template-columns: 1fr; gap: 18px; }
+  .p-2 { margin-top: 0; }
+  .person { grid-template-columns: 110px 1fr; }
+  .photo { min-height: 150px; }
+  .actives { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .posts { grid-template-columns: 1fr; gap: 16px; }
+  .post:nth-child(2n) { margin-top: 0; }
+  .history { gap: 28px; }
+  .flag { max-width: 100%; }
+  .two { gap: 28px; }
+  .apply { padding: 26px 20px; border-radius: 24px 6px 24px 6px; }
+  .apply input, .apply select, .apply textarea { font-size: 16px; }
+  .pill.big { padding: 15px 20px; }
+  .faq details { padding: 16px 18px; }
+  .faq details:nth-of-type(2n) { margin-left: 0; }
+  footer .wrap { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 380px) {
+  .mark span { display: none; }
+  .theme { font-size: 11px; padding: 6px 8px; }
+  .person { grid-template-columns: 1fr; }
+  .photo { min-height: 180px; }
 }
