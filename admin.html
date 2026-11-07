@@ -97,6 +97,7 @@
       </div>
       <button id="addActive">Добавить участника</button>
       <div id="activeList"></div>
+      <div id="pendingList"></div>
     </div>
 
     <div class="box">
@@ -104,6 +105,7 @@
       <p class="small">Нажмите кнопку, скачается файл <code>data.js</code>. Загрузите его в репозиторий вместо старого. GitHub Pages обновит сайт через 1–2 минуты.</p>
       <button id="saveBtn">Скачать data.js</button>
       <p class="msg" id="saveMsg"></p>
+      <p class="small">Не забудьте загрузить в <code>assets/img</code> файлы фото из списка выше, иначе фото не отобразится.</p>
     </div>
   </section>
 </div>
@@ -111,7 +113,7 @@
 <script src="data.js"></script>
 <script>
 // Хеш пароля. Вписывается один раз через «Первую настройку» выше.
-var ADMIN_HASH = "306c86813d3f8137008be6f384b6fad09d91abaf3f51db3aab6e7adbaf4f7060";
+var ADMIN_HASH = "";
 
 var DATA = JSON.parse(JSON.stringify(window.SITE_DATA || { settings: {}, leaders: {}, news: [], events: [], actives: [] }));
 
@@ -223,28 +225,67 @@ $('addEvent').addEventListener('click', function () {
   render();
 });
 
-// Фото уменьшаются до 400 пикселей и сохраняются в самом data.js
-function shrink(file, cb) {
+// Фото уменьшаются до 400 пикселей и сохраняются как файл в папку assets/img
+var PENDING_FILES = []; // файлы фото, которые нужно положить в assets/img
+
+function translit(text) {
+  var map = { а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'ts',ч:'ch',ш:'sh',щ:'sch',ъ:'',ы:'y',ь:'',э:'e',ю:'yu',я:'ya' };
+  return text.toLowerCase().split('').map(function (ch) { return map[ch] !== undefined ? map[ch] : ch; }).join('')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'photo';
+}
+
+function shrink(file, name, cb) {
   var img = new Image();
   img.onload = function () {
     var k = Math.min(1, 400 / Math.max(img.width, img.height));
     var c = document.createElement('canvas');
     c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
     c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-    cb(c.toDataURL('image/jpeg', 0.85));
+    c.toBlob(function (blob) {
+      var fname = translit(name) + '-' + Date.now().toString(36) + '.jpg';
+      cb({ path: 'assets/img/' + fname, file: fname, blob: blob });
+    }, 'image/jpeg', 0.85);
   };
   img.src = URL.createObjectURL(file);
 }
+
+function renderPending() {
+  var box = $('pendingList');
+  if (!PENDING_FILES.length) { box.innerHTML = ''; return; }
+  box.innerHTML = '<p class="small"><b>Файлы для папки assets/img (' + PENDING_FILES.length + '):</b></p>' +
+    PENDING_FILES.map(function (f, i) {
+      return '<div class="item"><span>' + esc(f.file) + '</span><button class="ghost" data-dl="' + i + '">Скачать</button></div>';
+    }).join('') +
+    '<p class="small">Положите скачанные файлы в папку <code>assets/img</code> репозитория. Путь уже прописан в data.js.</p>';
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('button[data-dl]');
+  if (!b) return;
+  var f = PENDING_FILES[Number(b.dataset.dl)];
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(f.blob);
+  a.download = f.file;
+  a.click();
+});
+
 $('addActive').addEventListener('click', function () {
   var name = $('a_name').value.trim();
-  if (!name) return;
+  if (!name) { $('pendingList').textContent = 'Введите фамилию и имя.'; return; }
   var file = $('a_photo').files[0];
   var add = function (photo) {
     DATA.actives.push({ name: name, photo: photo || '' });
     $('a_name').value = ''; $('a_photo').value = '';
     render();
+    renderPending();
   };
-  if (file) shrink(file, add); else add('');
+  if (file) {
+    shrink(file, name, function (res) {
+      PENDING_FILES.push(res);
+      add(res.path);
+    });
+  } else {
+    add('');
+  }
 });
 
 $('saveBtn').addEventListener('click', function () {
