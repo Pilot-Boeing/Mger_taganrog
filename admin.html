@@ -111,7 +111,7 @@
 <script src="data.js"></script>
 <script>
 // Хеш пароля. Вписывается один раз через «Первую настройку» выше.
-var ADMIN_HASH = "306c86813d3f8137008be6f384b6fad09d91abaf3f51db3aab6e7adbaf4f7060";
+var ADMIN_HASH = "";
 
 var DATA = JSON.parse(JSON.stringify(window.SITE_DATA || { settings: {}, leaders: {}, news: [], events: [], actives: [] }));
 
@@ -137,15 +137,30 @@ $('setupBtn').addEventListener('click', async function () {
   $('setupOut').innerHTML = 'Вставьте в файл admin.html: <code>var ADMIN_HASH = "' + h + '";</code>';
 });
 $('loginBtn').addEventListener('click', async function () {
-  var h = await sha256($('loginPass').value);
+  var err = $('loginErr');
+  err.textContent = '';
+  if (!window.crypto || !window.crypto.subtle) {
+    err.textContent = 'Браузер не может проверить пароль. Откройте сайт по адресу https://... (GitHub Pages), а не файлом с компьютера.';
+    return;
+  }
+  var h;
+  try {
+    h = await sha256($('loginPass').value);
+  } catch (e) {
+    err.textContent = 'Ошибка проверки пароля. Обновите страницу и попробуйте снова.';
+    return;
+  }
   if (h === ADMIN_HASH) {
     $('login').classList.add('hidden');
     $('editor').classList.remove('hidden');
     fill();
     render();
   } else {
-    $('loginErr').textContent = 'Неверный пароль.';
+    err.textContent = 'Пароль не совпадает с тем, что записан в файле. Проверьте раскладку и регистр букв, либо задайте пароль заново.';
   }
+});
+$('loginPass').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') $('loginBtn').click();
 });
 
 function fill() {
