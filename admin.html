@@ -29,7 +29,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Администратор МГЕР Таганрог</h1>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h1>Администратор МГЕР Таганрог</h1><a href="index.html" style="font-weight:600;color:#1769aa;text-decoration:none;border:1px solid #d5dcea;padding:9px 16px;border-radius:999px">← Вернуться на сайт</a></div>
 
   <!-- Установка пароля: показывается один раз, пока хеш не вписан в файл -->
   <section id="setup" class="box hidden">
@@ -101,11 +101,12 @@
     </div>
 
     <div class="box">
-      <h2>Сохранить изменения</h2>
-      <p class="small">Нажмите кнопку, скачается файл <code>data.js</code>. Загрузите его в репозиторий вместо старого. GitHub Pages обновит сайт через 1–2 минуты.</p>
-      <button id="saveBtn">Скачать data.js</button>
+      <h2>Сохранить</h2>
+      <p class="small">Одна кнопка сохраняет тексты, новости, события, активистов и фото прямо в репозиторий GitHub.</p>
+      <label>Токен GitHub (вводится один раз, хранится только в этом браузере)<input type="password" id="ghToken" autocomplete="off"></label>
+      <label>Логин владельца и имя репозитория (например, ivanov/mger-taganrog)<input id="ghRepo" placeholder="логин/репозиторий"></label>
+      <button id="saveBtn">Сохранить</button>
       <p class="msg" id="saveMsg"></p>
-      <p class="small">Не забудьте загрузить в <code>assets/img</code> файлы фото из списка выше, иначе фото не отобразится.</p>
     </div>
   </section>
 </div>
@@ -251,22 +252,10 @@ function shrink(file, name, cb) {
 
 function renderPending() {
   var box = $('pendingList');
-  if (!PENDING_FILES.length) { box.innerHTML = ''; return; }
-  box.innerHTML = '<p class="small"><b>Файлы для папки assets/img (' + PENDING_FILES.length + '):</b></p>' +
-    PENDING_FILES.map(function (f, i) {
-      return '<div class="item"><span>' + esc(f.file) + '</span><button class="ghost" data-dl="' + i + '">Скачать</button></div>';
-    }).join('') +
-    '<p class="small">Положите скачанные файлы в папку <code>assets/img</code> репозитория. Путь уже прописан в data.js.</p>';
+  box.innerHTML = PENDING_FILES.length
+    ? '<p class="small">Фото будут загружены в assets/img при нажатии «Сохранить»: ' + PENDING_FILES.map(function (f) { return esc(f.file); }).join(', ') + '</p>'
+    : '';
 }
-document.addEventListener('click', function (e) {
-  var b = e.target.closest('button[data-dl]');
-  if (!b) return;
-  var f = PENDING_FILES[Number(b.dataset.dl)];
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(f.blob);
-  a.download = f.file;
-  a.click();
-});
 
 $('addActive').addEventListener('click', function () {
   var name = $('a_name').value.trim();
@@ -288,16 +277,78 @@ $('addActive').addEventListener('click', function () {
   }
 });
 
-$('saveBtn').addEventListener('click', function () {
-  readSettings();
-  var text = '// Данные сайта. Обновлено: ' + new Date().toLocaleString('ru-RU') + '\n' +
-    'window.SITE_DATA = ' + JSON.stringify(DATA, null, 2) + ';\n';
-  var blob = new Blob([text], { type: 'text/javascript;charset=utf-8' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'data.js';
-  a.click();
-  $('saveMsg').textContent = 'Файл скачан. Загрузите его в репозиторий вместо старого.';
+
+// ===== Сохранение в репозиторий GitHub =====
+var GH_KEY = 'mger-gh';
+function ghLoad() {
+  try { var v = JSON.parse(localStorage.getItem(GH_KEY) || '{}'); $('ghToken').value = v.token || ''; $('ghRepo').value = v.repo || ''; } catch (e) {}
+}
+ghLoad();
+
+function b64utf8(text) {
+  var bytes = new TextEncoder().encode(text), bin = '';
+  for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+function blobToB64(blob) {
+  return new Promise(function (resolve, reject) {
+    var r = new FileReader();
+    r.onload = function () { resolve(String(r.result).split(',')[1]); };
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
+}
+async function ghGetSha(repo, path, token) {
+  var res = await fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+    headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('Ошибка доступа к файлу ' + path + ' (' + res.status + ')');
+  return (await res.json()).sha;
+}
+async function ghPut(repo, path, token, base64, message) {
+  var sha = await ghGetSha(repo, path, token);
+  var body = { message: message, content: base64 };
+  if (sha) body.sha = sha;
+  var res = await fetch('https://api.github.com/repos/' + repo + '/contents/' + path, {
+    method: 'PUT',
+    headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    var t = await res.text();
+    throw new Error('Не сохранено: ' + path + ' (' + res.status + ') ' + t.slice(0, 160));
+  }
+}
+
+$('saveBtn').addEventListener('click', async function () {
+  var msg = $('saveMsg');
+  var token = $('ghToken').value.trim(), repo = $('ghRepo').value.trim();
+  msg.className = 'msg';
+  if (!token || !repo || repo.indexOf('/') === -1) { msg.className = 'err'; msg.textContent = 'Введите токен и репозиторий в формате логин/репозиторий.'; return; }
+  localStorage.setItem(GH_KEY, JSON.stringify({ token: token, repo: repo }));
+  $('saveBtn').disabled = true;
+  try {
+    readSettings();
+    msg.textContent = 'Сохраняю фото...';
+    for (var i = 0; i < PENDING_FILES.length; i++) {
+      var f = PENDING_FILES[i];
+      await ghPut(repo, 'assets/img/' + f.file, token, await blobToB64(f.blob), 'Фото: ' + f.file);
+    }
+    msg.textContent = 'Сохраняю данные...';
+    var text = '// Данные сайта. Обновлено: ' + new Date().toLocaleString('ru-RU') + '\n' +
+      'window.SITE_DATA = ' + JSON.stringify(DATA, null, 2) + ';\n';
+    await ghPut(repo, 'data.js', token, b64utf8(text), 'Обновление данных сайта');
+    PENDING_FILES = [];
+    renderPending();
+    msg.className = 'msg ok';
+    msg.textContent = 'Сохранено. Сайт обновится через 1–2 минуты.';
+  } catch (e) {
+    msg.className = 'err';
+    msg.textContent = e.message || 'Ошибка сохранения.';
+  } finally {
+    $('saveBtn').disabled = false;
+  }
 });
 </script>
 </body>
