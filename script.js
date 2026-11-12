@@ -61,7 +61,7 @@
   }
   var saved = null;
   try { saved = localStorage.getItem('mger-theme'); } catch (e) {}
-  setTheme(saved === 'dark' ? 'dark' : 'light');
+  setTheme(saved === 'light' ? 'light' : 'dark');
   themeBtn.addEventListener('click', function () {
     var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     setTheme(next);
