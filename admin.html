@@ -105,7 +105,9 @@
       <p class="small">Одна кнопка сохраняет тексты, новости, события, активистов и фото прямо в репозиторий GitHub.</p>
       <label>Токен GitHub (вводится один раз, хранится только в этом браузере)<input type="password" id="ghToken" autocomplete="off"></label>
       <label>Логин владельца и имя репозитория (например, ivanov/mger-taganrog)<input id="ghRepo" placeholder="логин/репозиторий"></label>
+      <p class="small" id="ghState"></p>
       <button id="saveBtn">Сохранить</button>
+      <button class="ghost" id="ghForget">Забыть токен в этом браузере</button>
       <p class="msg" id="saveMsg"></p>
     </div>
   </section>
@@ -114,7 +116,7 @@
 <script src="data.js"></script>
 <script>
 // Хеш пароля. Вписывается один раз через «Первую настройку» выше.
-var ADMIN_HASH = "306c86813d3f8137008be6f384b6fad09d91abaf3f51db3aab6e7adbaf4f7060";
+var ADMIN_HASH = "";
 
 var DATA = JSON.parse(JSON.stringify(window.SITE_DATA || { settings: {}, leaders: {}, news: [], events: [], actives: [] }));
 
@@ -279,11 +281,27 @@ $('addActive').addEventListener('click', function () {
 
 
 // ===== Сохранение в репозиторий GitHub =====
-var GH_KEY = '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';
+var GH_KEY = 'mger-gh';
 function ghLoad() {
   try { var v = JSON.parse(localStorage.getItem(GH_KEY) || '{}'); $('ghToken').value = v.token || ''; $('ghRepo').value = v.repo || ''; } catch (e) {}
 }
 ghLoad();
+function ghStatus() {
+  var has = !!localStorage.getItem(GH_KEY);
+  $('ghState').textContent = has ? 'Токен и репозиторий сохранены в этом браузере.' : 'Токен пока не сохранён.';
+}
+function ghSave() {
+  localStorage.setItem(GH_KEY, JSON.stringify({ token: $('ghToken').value.trim(), repo: $('ghRepo').value.trim() }));
+  ghStatus();
+}
+$('ghToken').addEventListener('change', ghSave);
+$('ghRepo').addEventListener('change', ghSave);
+$('ghForget').addEventListener('click', function () {
+  localStorage.removeItem(GH_KEY);
+  $('ghToken').value = ''; $('ghRepo').value = '';
+  ghStatus();
+});
+ghStatus();
 
 function b64utf8(text) {
   var bytes = new TextEncoder().encode(text), bin = '';
@@ -326,7 +344,7 @@ $('saveBtn').addEventListener('click', async function () {
   var token = $('ghToken').value.trim(), repo = $('ghRepo').value.trim();
   msg.className = 'msg';
   if (!token || !repo || repo.indexOf('/') === -1) { msg.className = 'err'; msg.textContent = 'Введите токен и репозиторий в формате логин/репозиторий.'; return; }
-  localStorage.setItem(GH_KEY, JSON.stringify({ token: token, repo: repo }));
+  ghSave();
   $('saveBtn').disabled = true;
   try {
     readSettings();

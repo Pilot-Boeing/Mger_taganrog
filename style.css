@@ -183,3 +183,26 @@ footer a { color: #fff; }
   .person { grid-template-columns: 1fr; }
   .photo { min-height: 180px; }
 }
+
+/* ===== Правки: руководство, блоки направлений, вопросы, галочка ===== */
+/* 2. Руководство: одна высота, второй блок зеркально (фото справа) */
+.leaders { align-items: stretch; }
+.person { height: 100%; }
+.p-2 { margin-top: 0 !important; grid-template-columns: 1fr 150px; }
+.p-2 .photo { order: 2; }
+@media (max-width: 480px) { .p-2 { grid-template-columns: 1fr; } .p-2 .photo { order: 0; } }
+
+/* 5. Направления: 2 и 3 как в версии 4 (прямоугольные карточки), 4 повторяет форму прежнего 2-го */
+.dirs .d-b, .dirs .d-c { border-radius: 0 !important; box-shadow: none !important; border: 1px solid var(--line) !important; }
+.dirs .d-d { border-radius: 26px 4px 26px 4px !important; }
+
+/* 3. Вопросы: одна форма и один размер */
+.faq details, .faq details:nth-of-type(2n), .faq details:nth-of-type(3n) {
+  border-radius: 14px !important; margin-left: 0 !important; padding: 18px 24px !important;
+  box-shadow: var(--glow) !important; font-size: 16px;
+}
+.faq summary { font-size: 18px; }
+
+/* 4. Галочка: не растягивается, текст не сдвигается */
+.apply label.ok { display: flex !important; align-items: flex-start; gap: 10px; }
+.apply label.ok input[type="checkbox"] { width: 18px !important; height: 18px !important; flex: 0 0 18px; padding: 0 !important; margin: 2px 0 0; accent-color: var(--red); }
