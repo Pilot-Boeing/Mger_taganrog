@@ -229,3 +229,16 @@ footer a { color: #fff; }
 /* Синяя полоска сверху каждого блока «Кто мы» (отдельным слоем, не зависит от скругления) */
 .dirs .dir { position: relative !important; overflow: hidden !important; }
 .dirs .dir::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: #3b82f6 !important; display: block !important; z-index: 2; }
+
+/* Мобильная версия: фото руководства не растягивает карточку (фиксированная высота, картинка внутри) */
+.photo { position: relative; overflow: hidden; }
+.photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+@media (max-width: 760px) {
+  .person { grid-template-columns: 110px 1fr !important; height: auto; }
+  .p-2 { grid-template-columns: 1fr 110px !important; }
+  .photo { height: 160px; min-height: 0; }
+}
+@media (max-width: 480px) {
+  .person, .p-2 { grid-template-columns: 1fr !important; }
+  .photo { height: 220px; }
+}
