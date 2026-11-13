@@ -242,3 +242,17 @@ footer a { color: #fff; }
   .person, .p-2 { grid-template-columns: 1fr !important; }
   .photo { height: 220px; }
 }
+
+/* Мобильная версия руководства: обе карточки одинаковые, фото слева, описание справа */
+@media (max-width: 760px) {
+  .person, .p-2 { grid-template-columns: 110px 1fr !important; height: auto !important; }
+  .p-2 .photo { order: 0 !important; }
+  .photo { height: 150px !important; min-height: 0 !important; }
+  .info { padding: 16px 16px; align-self: center; }
+  .info h3 { font-size: 18px; }
+}
+@media (max-width: 480px) {
+  .person, .p-2 { grid-template-columns: 96px 1fr !important; }
+  .photo { height: 130px !important; }
+  .info h3 { font-size: 17px; }
+}
