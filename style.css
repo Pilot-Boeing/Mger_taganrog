@@ -225,3 +225,7 @@ footer a { color: #fff; }
 
 /* Синяя линия сверху каждого блока «Кто мы» */
 .dirs .dir { border-top: 3px solid var(--blue) !important; }
+
+/* Синяя полоска сверху каждого блока «Кто мы» (отдельным слоем, не зависит от скругления) */
+.dirs .dir { position: relative !important; overflow: hidden !important; }
+.dirs .dir::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: #3b82f6 !important; display: block !important; z-index: 2; }
