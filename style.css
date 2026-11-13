@@ -256,3 +256,49 @@ footer a { color: #fff; }
   .photo { height: 130px !important; }
   .info h3 { font-size: 17px; }
 }
+
+/* Мобильные карточки руководителя и заместителя:
+   фото занимает 1/3 ширины, текст — 2/3 */
+@media (max-width: 760px) {
+  .person,
+  .person.p-2 {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) !important;
+    height: auto !important;
+  }
+
+  .person .photo,
+  .person.p-2 .photo {
+    order: 0 !important;
+    height: auto !important;
+    min-height: 150px !important;
+    align-self: stretch;
+  }
+
+  .person .info {
+    min-width: 0;
+    padding: 14px;
+    align-self: center;
+  }
+
+  .person .info h3 {
+    font-size: 17px;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* На совсем узких экранах сохраняем пропорцию фото 1: текст 2 */
+@media (max-width: 380px) {
+  .person,
+  .person.p-2 {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) !important;
+  }
+
+  .person .photo,
+  .person.p-2 .photo {
+    min-height: 130px !important;
+  }
+
+  .person .info {
+    padding: 10px;
+  }
+}
