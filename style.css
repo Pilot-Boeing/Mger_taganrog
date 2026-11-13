@@ -222,3 +222,6 @@ footer a { color: #fff; }
 .dirs .dir:hover { transform: translateY(-4px) !important; }
 @media (max-width: 900px) { .dirs { grid-template-columns: 1fr 1fr !important; } }
 @media (max-width: 560px) { .dirs { grid-template-columns: 1fr !important; } }
+
+/* Синяя линия сверху каждого блока «Кто мы» */
+.dirs .dir { border-top: 3px solid var(--blue) !important; }
