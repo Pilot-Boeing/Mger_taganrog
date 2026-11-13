@@ -206,3 +206,19 @@ footer a { color: #fff; }
 /* 4. Галочка: не растягивается, текст не сдвигается */
 .apply label.ok { display: flex !important; align-items: flex-start; gap: 10px; }
 .apply label.ok input[type="checkbox"] { width: 18px !important; height: 18px !important; flex: 0 0 18px; padding: 0 !important; margin: 2px 0 0; accent-color: var(--red); }
+
+/* ===== Блоки «Кто мы»: одинаковые по форме, высоте и положению ===== */
+.dirs { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 18px !important; align-items: stretch !important; }
+.dirs .dir,
+.dirs .dir.d-a, .dirs .dir.d-b, .dirs .dir.d-c, .dirs .dir.d-d {
+  margin: 0 !important; transform: none !important; height: 100%;
+  display: flex; flex-direction: column; align-items: flex-start;
+  background: var(--card) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 20px !important;
+  box-shadow: var(--glow) !important;
+  padding: 28px 24px !important;
+}
+.dirs .dir:hover { transform: translateY(-4px) !important; }
+@media (max-width: 900px) { .dirs { grid-template-columns: 1fr 1fr !important; } }
+@media (max-width: 560px) { .dirs { grid-template-columns: 1fr !important; } }
