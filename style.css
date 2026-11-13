@@ -192,9 +192,9 @@ footer a { color: #fff; }
 .p-2 .photo { order: 2; }
 @media (max-width: 480px) { .p-2 { grid-template-columns: 1fr; } .p-2 .photo { order: 0; } }
 
-/* 5. Направления: 2 и 3 как в версии 4 (прямоугольные карточки), 4 повторяет форму прежнего 2-го */
-.dirs .d-b, .dirs .d-c { border-radius: 0 !important; box-shadow: none !important; border: 1px solid var(--line) !important; }
-.dirs .d-d { border-radius: 26px 4px 26px 4px !important; }
+/* 5. Направления: блоки 2 и 4 со скруглением и подсветкой, блок 3 прямоугольный как в версии 4 */
+.dirs .d-b, .dirs .d-d { border-radius: 26px 4px 26px 4px !important; box-shadow: var(--glow) !important; border: 1px solid var(--line) !important; }
+.dirs .d-c { border-radius: 0 !important; box-shadow: none !important; border: 1px solid var(--line) !important; }
 
 /* 3. Вопросы: одна форма и один размер */
 .faq details, .faq details:nth-of-type(2n), .faq details:nth-of-type(3n) {
