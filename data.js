@@ -5,7 +5,7 @@ window.SITE_DATA = {
     "members_count": "15",
     "events_count": "100+",
     "address": "г. Таганрог, ул. Фрунзе 59",
-    "leader_name": "Абакумов Артём Анатольевич",
+    "leader_name": "Абакумов Артём",
     "leader_role": "Руководитель местного отделения",
     "deputy_name": "Качурина Злата",
     "deputy_role": "Первый заместитель руководителя",
