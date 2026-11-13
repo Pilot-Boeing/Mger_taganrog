@@ -7,14 +7,14 @@ window.SITE_DATA = {
     "address": "г. Таганрог, ул. Фрунзе 59",
     "leader_name": "Абакумов Артём Анатольевич",
     "leader_role": "Руководитель местного отделения",
-    "deputy_name": "Чурина Злата",
+    "deputy_name": "Качурина Злата",
     "deputy_role": "Первый заместитель руководителя",
     "socials_title": "ВКонтакте",
     "socials_url": "https://vk.ru/club234662241"
   },
   "leaders": {
     "leader_photo": "assets/img/abakumov.jpg",
-    "deputy_photo": "assets/img/chuprina.jpg"
+    "deputy_photo": "assets/img/kachuprina.jpg"
   },
   "news": [],
   "events": [],
