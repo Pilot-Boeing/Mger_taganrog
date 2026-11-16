@@ -257,48 +257,39 @@ footer a { color: #fff; }
   .info h3 { font-size: 17px; }
 }
 
-/* Мобильные карточки руководителя и заместителя:
-   фото занимает 1/3 ширины, текст — 2/3 */
-@media (max-width: 760px) {
-  .person,
-  .person.p-2 {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) !important;
-    height: auto !important;
-  }
-
-  .person .photo,
-  .person.p-2 .photo {
-    order: 0 !important;
-    height: auto !important;
-    min-height: 150px !important;
-    align-self: stretch;
-  }
-
-  .person .info {
-    min-width: 0;
-    padding: 14px;
-    align-self: center;
-  }
-
-  .person .info h3 {
-    font-size: 17px;
-    overflow-wrap: anywhere;
-  }
+/* ===== Анимации ===== */
+/* Самые активные: переливающийся флаг России за блоком */
+.b-3 { position: relative; overflow: hidden; isolation: isolate; }
+.b-3::before {
+  content: ""; position: absolute; inset: -10%; z-index: -2; opacity: .18;
+  background: linear-gradient(180deg, #ffffff 0 33.33%, #0039a6 33.33% 66.66%, #d52b1e 66.66% 100%);
+  animation: flagWave 9s ease-in-out infinite;
+  filter: blur(18px);
 }
+.b-3::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.22) 50%, transparent 70%);
+  background-size: 250% 100%; animation: sheen 6s linear infinite;
+}
+@keyframes flagWave {
+  0%, 100% { transform: translate3d(0,0,0) skewY(0deg); }
+  25% { transform: translate3d(2%,-2%,0) skewY(1.5deg); }
+  50% { transform: translate3d(-2%,2%,0) skewY(-1.5deg); }
+  75% { transform: translate3d(1%,1%,0) skewY(1deg); }
+}
+@keyframes sheen { 0% { background-position: 150% 0; } 100% { background-position: -150% 0; } }
+.b-3 h2 { position: relative; }
 
-/* На совсем узких экранах сохраняем пропорцию фото 1: текст 2 */
-@media (max-width: 380px) {
-  .person,
-  .person.p-2 {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) !important;
-  }
+/* Появление блоков при прокрутке */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s ease, transform .8s ease; }
+.reveal.in { opacity: 1; transform: none; }
+.reveal.r2 { transition-delay: .15s; }
+.reveal.r3 { transition-delay: .3s; }
 
-  .person .photo,
-  .person.p-2 .photo {
-    min-height: 130px !important;
-  }
+/* Мягкое движение карточек при наведении */
+.dirs .dir, .leader, .act, .post { transition: transform .35s ease, box-shadow .35s ease; }
+.act:hover, .post:hover, .person:hover { transform: translateY(-4px); }
 
-  .person .info {
-    padding: 10px;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .b-3::before, .b-3::after, .reveal { animation: none !important; transition: none !important; opacity: 1; transform: none; }
 }

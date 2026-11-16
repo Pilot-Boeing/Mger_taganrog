@@ -102,3 +102,19 @@
     f.reset();
   });
 })();
+
+// Появление блоков при прокрутке
+(function () {
+  var targets = document.querySelectorAll('.block .wrap > h2, .dirs .dir, .leaders .person, .actives .act, .posts .post, .history > div, .stats div');
+  if (!('IntersectionObserver' in window)) { targets.forEach(function (el) { el.classList.add('in'); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.15 });
+  targets.forEach(function (el, i) {
+    el.classList.add('reveal');
+    el.classList.add(i % 3 === 1 ? 'r2' : (i % 3 === 2 ? 'r3' : ''));
+    io.observe(el);
+  });
+})();
