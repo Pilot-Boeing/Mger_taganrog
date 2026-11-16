@@ -103,18 +103,51 @@
   });
 })();
 
+// Включаем режим анимаций (без JS все блоки видны сразу)
+document.documentElement.classList.add('js');
+
 // Появление блоков при прокрутке
 (function () {
-  var targets = document.querySelectorAll('.block .wrap > h2, .dirs .dir, .leaders .person, .actives .act, .posts .post, .history > div, .stats div');
-  if (!('IntersectionObserver' in window)) { targets.forEach(function (el) { el.classList.add('in'); }); return; }
+  var sel = '.block .wrap > h2, .block .wrap > .lead, .dirs .dir, .leaders .person, .actives .act, .posts .post, .history > div, .history .line li, .stats > div, .faq details, .apply, .contact-list p, .steps li';
+  var els = Array.prototype.slice.call(document.querySelectorAll(sel));
+  els.forEach(function (el, i) { el.classList.add('rv'); if (i % 3 === 1) el.classList.add('d1'); if (i % 3 === 2) el.classList.add('d2'); });
+  function showAll() { els.forEach(function (el) { el.classList.add('in'); }); }
+  if (!('IntersectionObserver' in window)) { showAll(); return; }
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (en) {
       if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
     });
-  }, { threshold: 0.15 });
-  targets.forEach(function (el, i) {
-    el.classList.add('reveal');
-    el.classList.add(i % 3 === 1 ? 'r2' : (i % 3 === 2 ? 'r3' : ''));
-    io.observe(el);
-  });
+  }, { threshold: 0.12 });
+  els.forEach(function (el) { io.observe(el); });
+  setTimeout(function () { // страховка: если что-то не сработало, всё равно показываем через 3 секунды
+    showAll();
+  }, 3000);
+})();
+
+// Счётчики цифр: считают от нуля, когда цифра появляется на экране
+(function () {
+  var nums = Array.prototype.slice.call(document.querySelectorAll('[data-count]'));
+  if (!nums.length) return;
+  function run(el) {
+    var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+    var suffix = el.getAttribute('data-suffix') || '';
+    var start = null, dur = 1600;
+    function step(ts) {
+      if (!start) start = ts;
+      var k = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - k, 3);
+      var val = Math.round(target * eased);
+      el.textContent = (target >= 1000 ? val.toLocaleString('ru-RU').replace(/,/g, ' ') : val) + (k === 1 ? suffix : '');
+      if (k < 1) requestAnimationFrame(step);
+    }
+    el.textContent = '0' + (suffix && target ? '' : '');
+    requestAnimationFrame(step);
+  }
+  if (!('IntersectionObserver' in window)) { nums.forEach(run); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { run(en.target); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.5 });
+  nums.forEach(function (el) { io.observe(el); });
 })();

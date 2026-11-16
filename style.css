@@ -290,22 +290,12 @@ footer a { color: #fff; }
   .b-3::before, .b-3::after, .reveal { animation: none !important; transition: none !important; opacity: 1; transform: none; }
 }
 
-/* Появление блоков при загрузке страницы (надёжно во всех браузерах) */
-@keyframes riseIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
-.block .wrap > h2, .block .wrap > .lead, .block .wrap > .dirs .dir,
-.leaders .person, .actives .act, .posts .post, .history > div, .stats > div,
-.faq details, .apply, .two > div, .contact {
-  animation: riseIn .9s ease backwards;
-}
-.dirs .dir:nth-child(2) { animation-delay: .1s; }
-.dirs .dir:nth-child(3) { animation-delay: .2s; }
-.dirs .dir:nth-child(4) { animation-delay: .3s; }
-.leaders .person:nth-child(2) { animation-delay: .15s; }
-.posts .post:nth-child(2) { animation-delay: .1s; }
-.faq details:nth-of-type(2) { animation-delay: .1s; }
-.faq details:nth-of-type(3) { animation-delay: .2s; }
+/* Появление блоков: управляется script.js (класс .rv и .in) */
+html.js .rv { opacity: 0; transform: translateY(28px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+html.js .rv.in { opacity: 1; transform: none; }
+html.js .rv.d1 { transition-delay: .12s; }
+html.js .rv.d2 { transition-delay: .24s; }
+html.js .rv.d3 { transition-delay: .36s; }
 @media (prefers-reduced-motion: reduce) {
-  .block .wrap > h2, .block .wrap > .lead, .block .wrap > .dirs .dir,
-  .leaders .person, .actives .act, .posts .post, .history > div, .stats > div,
-  .faq details, .apply, .two > div, .contact { animation: none !important; }
+  html.js .rv { opacity: 1 !important; transform: none !important; transition: none !important; }
 }
