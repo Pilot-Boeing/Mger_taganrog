@@ -290,23 +290,20 @@ footer a { color: #fff; }
   .b-3::before, .b-3::after, .reveal { animation: none !important; transition: none !important; opacity: 1; transform: none; }
 }
 
-/* Появление блоков: работает без JavaScript. В современных браузерах — при прокрутке, в остальных — при загрузке */
+/* Появление блоков при загрузке страницы (надёжно во всех браузерах) */
 @keyframes riseIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
 .block .wrap > h2, .block .wrap > .lead, .block .wrap > .dirs .dir,
 .leaders .person, .actives .act, .posts .post, .history > div, .stats > div,
 .faq details, .apply, .two > div, .contact {
-  animation: riseIn .9s ease both;
-  animation-timeline: view();
-  animation-range: entry 0% entry 40%;
+  animation: riseIn .9s ease backwards;
 }
-.posts .post:nth-child(2n) { animation-delay: .1s; }
-.dirs .dir:nth-child(2n) { animation-delay: .12s; }
-.dirs .dir:nth-child(3n) { animation-delay: .24s; }
-@supports not (animation-timeline: view()) {
-  .block .wrap > h2, .block .wrap > .lead, .block .wrap > .dirs .dir,
-  .leaders .person, .actives .act, .posts .post, .history > div, .stats > div,
-  .faq details, .apply, .two > div, .contact { animation-timeline: auto; animation-duration: .9s; }
-}
+.dirs .dir:nth-child(2) { animation-delay: .1s; }
+.dirs .dir:nth-child(3) { animation-delay: .2s; }
+.dirs .dir:nth-child(4) { animation-delay: .3s; }
+.leaders .person:nth-child(2) { animation-delay: .15s; }
+.posts .post:nth-child(2) { animation-delay: .1s; }
+.faq details:nth-of-type(2) { animation-delay: .1s; }
+.faq details:nth-of-type(3) { animation-delay: .2s; }
 @media (prefers-reduced-motion: reduce) {
   .block .wrap > h2, .block .wrap > .lead, .block .wrap > .dirs .dir,
   .leaders .person, .actives .act, .posts .post, .history > div, .stats > div,
