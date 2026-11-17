@@ -321,3 +321,23 @@ html.js .rv.d3 { transition-delay: .36s; }
 
 /* Форма: понятное подтверждение */
 .note:empty { display: none; }
+
+/* ===== Видео в шапке (без звука) ===== */
+.hero { position: relative; overflow: hidden; isolation: isolate; }
+.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; filter: saturate(1.1) brightness(.55); }
+.hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10,10,12,.35), rgba(10,10,12,.75)); }
+.hero h1, .hero .intro, .hero .tag, .hero .stats { position: relative; }
+@media (prefers-reduced-motion: reduce) { .hero-video { display: none; } }
+@media (max-width: 760px) { .hero-video { object-position: center 30%; } }
+
+/* Фото заместителя: кадр по лицу */
+.photo img { object-position: center 20%; }
+
+/* Видео растянуто на весь блок, без звука, с затемнением и тенью у текста */
+.hero { min-height: 520px; display: flex; align-items: center; }
+.hero .wrap { width: 100%; }
+.hero-video { object-fit: fill !important; filter: brightness(.42) saturate(1.05); }
+.hero h1, .hero .intro, .hero .tag { text-shadow: 0 2px 14px rgba(0,0,0,.65), 0 0 2px rgba(0,0,0,.5); }
+.hero .intro { color: #f2f2f4; }
+.hero .stats div { backdrop-filter: blur(6px); background: rgba(20,20,24,.55) !important; }
+@media (max-width: 760px) { .hero { min-height: 460px; } .hero-video { object-fit: fill !important; } }
