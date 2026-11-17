@@ -299,3 +299,25 @@ html.js .rv.d3 { transition-delay: .36s; }
 @media (prefers-reduced-motion: reduce) {
   html.js .rv { opacity: 1 !important; transform: none !important; transition: none !important; }
 }
+
+/* ===== Удобство: шаги вступления, результаты, постоянная кнопка на телефоне ===== */
+.steps.four { list-style: none; counter-reset: st; display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 26px; }
+.steps.four li { counter-increment: st; display: grid; grid-template-columns: 40px 1fr; gap: 4px 14px; align-items: start; padding: 14px 16px; background: var(--card); border-radius: 14px; box-shadow: var(--glow); }
+.steps.four li::before { content: counter(st); grid-row: span 2; width: 34px; height: 34px; border-radius: 50%; background: var(--grad); color: #fff; display: grid; place-items: center; font-weight: 700; }
+.steps.four li::after { display: none; }
+.steps.four li b { font-size: 16px; }
+.steps.four li span { color: var(--muted); font-size: 14px; }
+
+.b-results { background: transparent; padding-top: 60px; padding-bottom: 60px; }
+.result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 760px) { .result-grid { grid-template-columns: 1fr; } }
+.result { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; text-align: center; box-shadow: var(--glow); }
+.result strong { display: block; font-size: 42px; color: var(--red); line-height: 1.1; }
+.result span { color: var(--muted); font-size: 14px; }
+
+/* Постоянная кнопка «Вступить» внизу экрана на телефоне */
+.sticky-cta { display: none; position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 40; text-align: center; padding: 15px; border-radius: 999px; background: var(--grad); color: #fff; font: 700 16px "Segoe UI", Arial, sans-serif; text-decoration: none; box-shadow: var(--glow); }
+@media (max-width: 760px) { .sticky-cta { display: block; } }
+
+/* Форма: понятное подтверждение */
+.note:empty { display: none; }
