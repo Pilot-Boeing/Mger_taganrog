@@ -363,3 +363,5 @@ html.js .rv.d3 { transition-delay: .36s; }
 .leaders .person { transition: transform .45s cubic-bezier(.2,.7,.2,1), box-shadow .45s ease, opacity .9s ease !important; }
 html.js .leaders .person.in:hover,
 .leaders .person:hover { transform: translateY(-8px) !important; box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 0 26px rgba(255,77,109,.28), var(--glow) !important; }
+
+.foot-logo { height: 44px; width: auto; border-radius: 8px; margin-right: 14px; vertical-align: middle; }
