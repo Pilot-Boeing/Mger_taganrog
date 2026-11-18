@@ -151,3 +151,22 @@ document.documentElement.classList.add('js');
   }, { threshold: 0.5 });
   nums.forEach(function (el) { io.observe(el); });
 })();
+
+
+// Меню на телефоне: отдельный надёжный обработчик
+(function () {
+  var btn = document.getElementById('burger');
+  var nav = document.getElementById('menu');
+  if (!btn || !nav) return;
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  nav.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      nav.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
