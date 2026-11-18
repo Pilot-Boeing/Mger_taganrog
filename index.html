@@ -13,7 +13,8 @@
 <header class="top">
   <div class="wrap top-in">
     <a href="#top" class="mark">Молодая гвардия Единой России<span><em>Таганрог</em></span></a>
-    <button class="burger" id="burger" aria-label="Меню" aria-expanded="false">☰</button>
+    <input type="checkbox" id="navtoggle" class="navtoggle" aria-label="Открыть меню">
+    <label for="navtoggle" class="burger" role="button" tabindex="0">☰</label>
     <nav id="menu">
       <a href="#about">О нас</a>
       <a href="#leaders">Руководство</a>
@@ -23,6 +24,7 @@
       <a href="#history">История</a>
       <a href="#apply" class="pill">Вступить</a>
     </nav>
+    <button class="theme" id="theme" aria-label="Сменить тему">Тёмная тема</button>
   </div>
 </header>
 
