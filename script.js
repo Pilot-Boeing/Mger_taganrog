@@ -1,3 +1,41 @@
+// Меню на телефоне (независимый обработчик, работает всегда)
+(function () {
+  var btn = document.getElementById('burger');
+  var nav = document.getElementById('menu');
+  if (!btn || !nav) return;
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  nav.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      nav.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+
+// Тема (светлая по умолчанию, тёмная по кнопке)
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme');
+  if (!btn) return;
+  function setTheme(t) {
+    if (t === 'dark') root.setAttribute('data-theme', 'dark');
+    else root.removeAttribute('data-theme');
+    btn.textContent = t === 'dark' ? 'Светлая тема' : 'Тёмная тема';
+  }
+  var saved = null;
+  try { saved = localStorage.getItem('mger-theme'); } catch (e) {}
+  setTheme(saved === 'light' ? 'light' : 'dark');
+  btn.addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    try { localStorage.setItem('mger-theme', next); } catch (e) {}
+  });
+})();
+
 // Статичная версия: выводит данные из data.js, переключает тему, обрабатывает форму
 (function () {
   var D = window.SITE_DATA || {};
@@ -50,33 +88,6 @@
   }
   $('news-list').innerHTML = posts(D.news, 'news');
   $('events-list').innerHTML = posts(D.events, 'event');
-
-  // Тема: светлая по умолчанию
-  var root = document.documentElement;
-  var themeBtn = $('theme');
-  function setTheme(t) {
-    if (t === 'dark') root.setAttribute('data-theme', 'dark');
-    else root.removeAttribute('data-theme');
-    themeBtn.textContent = t === 'dark' ? 'Светлая тема' : 'Тёмная тема';
-  }
-  var saved = null;
-  try { saved = localStorage.getItem('mger-theme'); } catch (e) {}
-  setTheme(saved === 'light' ? 'light' : 'dark');
-  themeBtn.addEventListener('click', function () {
-    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    try { localStorage.setItem('mger-theme', next); } catch (e) {}
-  });
-
-  // Меню на телефоне
-  var burger = $('burger'), menu = $('menu');
-  burger.addEventListener('click', function () {
-    var open = menu.classList.toggle('open');
-    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-  menu.addEventListener('click', function (e) {
-    if (e.target.tagName === 'A') { menu.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); }
-  });
 
   // Форма заявки без сервера: текст заявки для отправки руководству через ВКонтакте
   $('apply-form').addEventListener('submit', function (e) {
@@ -151,9 +162,6 @@ document.documentElement.classList.add('js');
   }, { threshold: 0.5 });
   nums.forEach(function (el) { io.observe(el); });
 })();
-
-
-// Меню на телефоне: отдельный надёжный обработчик
 (function () {
   var btn = document.getElementById('burger');
   var nav = document.getElementById('menu');
