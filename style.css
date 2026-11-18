@@ -398,3 +398,11 @@ html.js .leaders .person.in:hover,
   .navtoggle:checked ~ nav { display: flex !important; }
   .navtoggle:focus-visible ~ label.burger { outline: 2px solid var(--red); }
 }
+
+/* Чекбокс меню скрыт полностью; ☰ (label) открывает список */
+.navtoggle, input.navtoggle { display: none !important; }
+@media (max-width: 760px) {
+  .top .burger { display: inline-block !important; cursor: pointer; user-select: none; }
+  .top nav { display: none !important; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; background: var(--card); border-top: 1px solid var(--line); padding: 8px 12px 14px; z-index: 60; }
+  .navtoggle:checked ~ nav { display: flex !important; }
+}
